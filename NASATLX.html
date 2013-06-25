@@ -1,146 +1,76 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>WorkloadExperiment</title>
-    <link rel="stylesheet" href="WorkloadExperiment.css">
-  </head>
-  <body>
-    <div id="task" class="task">
-      <div id="score" class="score">Score: <span id="score-content">0</span></div>
-      <div id="addition" class="addition">X + Y</div>
-      <div id="start-button" class="start-button target enemy start-target"></div>
-      <div class="not-start-button target friend start-target"></div>
-      <div class="replay-ui">
-        <div class="replay-controls">
-          <div id="replay-selection">
-            <div id="expand-bar"></div>
-            <div id="replay-select-lists">
-              <div id="subject-select" class="replay-select-list">
-              </div>
-              <div id="block-select" class="replay-select-list">
-              </div>
-              <div id="trial-select" class="replay-select-list">
-              </div>
-            </div>
-          </div>
-          <div><button id="replay-play">Play</button><button id="replay-stop">Stop</button></div>
-          <div id="indicator-bar" class="indicator-bar">
-            <div id="hit1" class="hit-indicator"></div>
-            <div id="hit2" class="hit-indicator"></div>
-            <div id="additionTime" class="addition-indicator"></div>
-          </div>
-          <div id="hover-bar" class="indicator-bar">
-          </div>
-          <input type="range" class="replay-time-slider" id="iteration-time-slider"><br>
-          <input type="range" class="replay-time-slider" id="trial-time-slider"><br>
-          <label for="iteration-time">Iteration Time:</label><input type="text" id="iteration-time"><br>
-          <label for="trial-time">Trial Time:</label><input type="text" id="trial-time">
-        </div>
-        <div id="replay-miss"></div>
-        <div id="replay-cursor"></div>
-      </div>
-    </div>
-    <div id="settings" class="settings">
-      <h1>Subject</h1>
-      <label for="subject-number">Number: </label><input type="text" id="subject-number"></input><br />
-      <button id="set-subject-number">Set Subject</button><br />
-      <h1>Task Settings</h1>
-      <audio src="web/audio/beep.ogg" id="beep">Your browser does not support the audio element</audio>
-      <label for="iterations">Iterations: </label><input type="text" id="iterations" value="12"></input><br />
-      <label for="iteration-time">Iteration time (ms): </label><input type="text" id="iteration-time" value="5000"></input><br />
-      <label for="target-size">Target size (px): </label><input type="text" id="target-size" value="128"></input><br />
-      <label for="num-targets">Number of targets: </label><input type="text" id="num-targets" value="1"></input><br />
-      <label for="target-dist">Target travel distance (px): </label><input type="text" id="target-dist" value="400"></input><br />
-      <label for="min-op">Minimum operand: </label><input type="text" id="min-op" value="1"></input><br />
-      <label for="max-op">Maximum operand: </label><input type="text" id="max-op" value="15"></input><br />
-      <button id="set-params">Set Parameters</button>
-      <h1>Block Trial</h1>
-      <div>Number of targets</div>
-      <label for="block-num-targets-low">2</label><input type="radio" name="block-num-targets" value="low" id="block-num-targets-low">
-      <label for="block-num-targets-high">3</label><input type="radio" name="block-num-targets" value="high" id="block-num-targets-high">
-      <br />
-      <div>Target speed</div>
-      <label for="block-target-dist-low">80 px / s</label><input type="radio" name="block-target-dist" value="low" id="block-target-dist-low">
-      <label for="block-target-dist-high">160 px / s</label><input type="radio" name="block-target-dist" value="high" id="block-target-dist-high">
-      <br />
-      <div>Addition operands</div>
-      <label for="block-operand-range-low">[1,15]</label><input type="radio" name="block-operand-range" value="low" id="block-operand-range-low">
-      <label for="block-operand-range-high">[11,25]</label><input type="radio" name="block-operand-range" value="high" id="block-operand-range-high">
-      <br />
-      <div>Targeting difficulty</div>
-      <label for="block-target-difficulty-low">Low</label><input type="radio" name="block-target-difficulty" value="low" id="block-target-difficulty-low">
-      <label for="block-target-difficulty-high">High</label><input type="radio" name="block-target-difficulty" value="high" id="block-target-difficulty-high">
-      <br />
-      <button id="block-set-params">Set block</button>
-      <h1>All Blocks</h1>
-      <button id="all-blocks">Start block trials</button>
-    </div>
-    <div id="nasa-tlx" class="nasa-tlx">
-      <div id="mental-demand-section" class="tlx-section">
-        Mental Demand<span class="tlx-section-desc">How mentally demanding was the task?</span><br />
-        <input type="range" min="0" max="100" step="5" value="0" name="mental-demand" list="notches" id="mental-demand"><br />
-        <span class="tlx-low-label">Very Low</span><span class="tlx-high-label">Very High</span>
-      </div>
-      <div id="physical-demand-section" class="tlx-section">
-        Physical Demand<span class="tlx-section-desc">How physically demanding was the task?</span><br />
-        <input type="range" min="0" max="100" step="5" value="0" name="physical-demand" list="notches" id="physical-demand"><br />
-        <span class="tlx-low-label">Very Low</span><span class="tlx-high-label">Very High</span>
-      </div>
-      <div id="temporal-demand-section" class="tlx-section">
-        Temporal Demand<span class="tlx-section-desc">How hurried or rushed was the pace of the task?</span><br />
-        <input type="range" min="0" max="100" step="5" value="0" name="temporal-demand" list="notches" id="temporal-demand"><br />
-        <span class="tlx-low-label">Very Low</span><span class="tlx-high-label">Very High</span>
-      </div>
-      <div id="performance-section" class="tlx-section">
-        Performance<span class="tlx-section-desc">How successful were you in accomplishing what you were asked to do?</span><br />
-        <input type="range" min="0" max="100" step="5" value="0" name="performance" list="notches" id="performance"><br />
-        <span class="tlx-low-label">Perfect</span><span class="tlx-high-label">Failure</span>
-      </div>
-      <div id="effort-section" class="tlx-section">
-        Effort<span class="tlx-section-desc">How hard did you have to work to accomplish your level of performance?</span><br />
-        <input type="range" min="0" max="100" step="5" value="0" name="effort" list="notches" id="effort"><br />
-        <span class="tlx-low-label">Very Low</span><span class="tlx-high-label">Very High</span>
-      </div>
-      <div id="frustration-section" class="tlx-section">
-        Frustration<span class="tlx-section-desc">How insecure, discouraged, irritated, stressed, and annoyed were you?</span><br />
-        <input type="range" min="0" max="100" step="5" value="0" name="frustration" list="notches" id="frustration"><br />
-        <span class="tlx-low-label">Very Low</span><span class="tlx-high-label">Very High</span>
-      </div>
-      <div class="tlx-button-div"><button id="tlx-submit">Enter ratings</button></div>
-      <datalist id="notches">
-        <option value="0">
-        <option value="5">
-        <option value="10">
-        <option value="15">
-        <option value="20">
-        <option value="25">
-        <option value="30">
-        <option value="35">
-        <option value="40">
-        <option value="45">
-        <option value="50">
-        <option value="55">
-        <option value="60">
-        <option value="65">
-        <option value="70">
-        <option value="75">
-        <option value="80">
-        <option value="85">
-        <option value="90">
-        <option value="95">
-        <option value="100">
-      </datalist>
-    </div>
-    <div id="weights">
-      <div>Click the Scale Title that represents the more important contributor to workload for the specific task(s) you performed in this experiment</div>
-      <div class="scale-option" id="scale-option-1"></div>
-      <div>or</div>
-      <div class="scale-option" id="scale-option-2"></div>
-    </div>
+	<head>
+		<meta charset="utf-8">
+		<title>NASA TLX Survey</title>
+		<link rel="stylesheet" href="NASATLX.css">
+	</head>
+	<body>
+		<div id="nasa-tlx" class="nasa-tlx">
+			<div id="mental-demand-section" class="tlx-section">
+				Mental Demand<span class="tlx-section-desc">How mentally demanding was the task?</span><br />
+				<input type="range" min="0" max="100" step="5" value="0" name="mental-demand" list="notches" id="mental-demand"><br />
+				<span class="tlx-low-label">Very Low</span><span class="tlx-high-label">Very High</span>
+			</div>
+			<div id="physical-demand-section" class="tlx-section">
+				Physical Demand<span class="tlx-section-desc">How physically demanding was the task?</span><br />
+				<input type="range" min="0" max="100" step="5" value="0" name="physical-demand" list="notches" id="physical-demand"><br />
+				<span class="tlx-low-label">Very Low</span><span class="tlx-high-label">Very High</span>
+			</div>
+			<div id="temporal-demand-section" class="tlx-section">
+				Temporal Demand<span class="tlx-section-desc">How hurried or rushed was the pace of the task?</span><br />
+				<input type="range" min="0" max="100" step="5" value="0" name="temporal-demand" list="notches" id="temporal-demand"><br />
+				<span class="tlx-low-label">Very Low</span><span class="tlx-high-label">Very High</span>
+			</div>
+			<div id="performance-section" class="tlx-section">
+				Performance<span class="tlx-section-desc">How successful were you in accomplishing what you were asked to do?</span><br />
+				<input type="range" min="0" max="100" step="5" value="0" name="performance" list="notches" id="performance"><br />
+				<span class="tlx-low-label">Perfect</span><span class="tlx-high-label">Failure</span>
+			</div>
+			<div id="effort-section" class="tlx-section">
+				Effort<span class="tlx-section-desc">How hard did you have to work to accomplish your level of performance?</span><br />
+				<input type="range" min="0" max="100" step="5" value="0" name="effort" list="notches" id="effort"><br />
+				<span class="tlx-low-label">Very Low</span><span class="tlx-high-label">Very High</span>
+			</div>
+			<div id="frustration-section" class="tlx-section">
+				Frustration<span class="tlx-section-desc">How insecure, discouraged, irritated, stressed, and annoyed were you?</span><br />
+				<input type="range" min="0" max="100" step="5" value="0" name="frustration" list="notches" id="frustration"><br />
+				<span class="tlx-low-label">Very Low</span><span class="tlx-high-label">Very High</span>
+			</div>
+			<div class="tlx-button-div"><button id="tlx-submit">Enter ratings</button></div>
+			<datalist id="notches">
+				<option value="0">
+				<option value="5">
+				<option value="10">
+				<option value="15">
+				<option value="20">
+				<option value="25">
+				<option value="30">
+				<option value="35">
+				<option value="40">
+				<option value="45">
+				<option value="50">
+				<option value="55">
+				<option value="60">
+				<option value="65">
+				<option value="70">
+				<option value="75">
+				<option value="80">
+				<option value="85">
+				<option value="90">
+				<option value="95">
+				<option value="100">
+			</datalist>
+		</div>
+		<div id="weights">
+			<div>Click the Scale Title that represents the more important contributor to workload for the specific task(s) you performed in this experiment</div>
+			<div class="scale-option" id="scale-option-1"></div>
+			<div>or</div>
+			<div class="scale-option" id="scale-option-2"></div>
+		</div>
 
-    <script type="application/dart" src="web/WorkloadExperiment.dart"></script>
-    <script src="packages/browser/dart.js"></script>
-  </body>
+		<script type="application/dart" src="web/WorkloadExperiment.dart"></script>
+		<script src="packages/browser/dart.js"></script>
+	</body>
 </html>
