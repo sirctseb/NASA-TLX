@@ -36,6 +36,7 @@ var Scale = function(type) {
   return ret;
 }
 
+
 /// Manages the retrieval and storage of scale weights
 /// There should only be one instance of this
 var TlxWeights = (function() {
@@ -164,7 +165,14 @@ var TlxWeights = (function() {
     ratings[Scale.PERFORMANCE] = document.querySelector("#performance").value;
     ratings[Scale.EFFORT] = document.querySelector("#effort").value;
     ratings[Scale.FRUSTRATION] = document.querySelector("#frustration").value;
+    // put in results tab
     document.querySelector("#results textarea").value = JSON.stringify(ratings);
+    // send to server
+    sendToServer({
+      type: "survey",
+      prefix: document.querySelector("#prefix").value,
+      data: JSON.stringify(ratings)
+    });
   };
   document.querySelector("#tlx-reset").onclick = function(event) {
     // reset scales to 0
@@ -174,7 +182,14 @@ var TlxWeights = (function() {
     }
   };
   document.querySelector("#weights-submit").onclick = function(event) {
+    // put in results tab
     document.querySelector("#results textarea").value = JSON.stringify(scales);
+    // send to server
+    sendToServer({
+      type: "weights",
+      prefix: document.querySelector("#prefix").value,
+      data: JSON.stringify(scales)
+    });
   };
   document.querySelector("#weights-reset").onclick = function(event) {
     // reset scales
@@ -195,6 +210,39 @@ var TlxWeights = (function() {
   // show initial options
   presentOptions();
 
+  var socket = null;
+  var sendToServer = function(obj) {
+    if(socket != null) {
+      socket.send(JSON.stringify(obj));
+    } else {
+      // TODO error message
+    }
+  }
+  var warnServerOpen = function() {
+    // TODO make green?
+    document.querySelector("#server-state").textContent = "Server connected";
+  }
+  var warnServerClose = function() {
+    // TODO make red?
+    document.querySelector("#server-state").textContent = "Server not connected";
+  }
+  var connectToServer = function() {
+    try{
+      var host = "ws://127.0.0.1:8000/";
+      socket = new WebSocket(host);
+      socket.onclose = function(e) {
+        warnServerClose();
+      }
+      socket.onopen = function(e) {
+        warnServerOpen();
+      }
+    } catch(exception){
+      // TODO make less intrusive
+      alert("error connecting to server");
+    }
+  }
+
+  connectToServer();
   return ret;
   
 })();
