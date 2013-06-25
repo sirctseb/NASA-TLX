@@ -63,6 +63,16 @@ var TlxWeights = (function() {
     }
   }
 
+  var tabs = ["nasa-tlx", "weights", "results"];
+  var showTab = function(name) {
+    for(var i = 0; i < tabs.length; i++) {
+      if(tabs[i] != name) {
+        document.querySelector("#"+tabs[i]).classList.add("hidden");
+      }
+    }
+    document.querySelector("#" + name).classList.remove("hidden");
+  }
+
   /// Reset weights survey state
   var reset = function() {
     // reset scales
@@ -162,7 +172,7 @@ var TlxWeights = (function() {
     }
   };
   document.querySelector("#weights-submit").onclick = function(event) {
-    // TODO save weights
+    document.querySelector("#results textarea").value = JSON.stringify(scales);
   };
   document.querySelector("#weights-reset").onclick = function(event) {
     // reset scales
@@ -171,15 +181,14 @@ var TlxWeights = (function() {
     presentOptions();
   };
   document.querySelector("#show-workload").onclick = function(event) {
-    // make survey visible and weights invisible
-    document.querySelector("#nasa-tlx").classList.remove("hidden");
-    document.querySelector("#weights").classList.add("hidden");
+    showTab("nasa-tlx");
   };
   document.querySelector("#show-weights").onclick = function(event) {
-    // make weights ui visible and survey invisible
-    document.querySelector("#nasa-tlx").classList.add("hidden");
-    document.querySelector("#weights").classList.remove("hidden");
-  }
+    showTab("weights");
+  };
+  document.querySelector("#show-results").onclick = function(event) {
+    showTab("results");
+  };
 
   // show initial options
   presentOptions();
