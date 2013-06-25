@@ -30,7 +30,7 @@ var Scale = function(type) {
     title: Scale.scaleTitle[type],
     /// A method to produce a string output
     pretty: function() {
-      return this.title + ", " + this.type + ", " + this.count + ", " + this.weight;
+      return this.title + ", " + this.scale + ", " + this.count + ", " + this.weight;
     }
   }
   /// The computed weight for the scale
