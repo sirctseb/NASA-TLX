@@ -10,9 +10,6 @@ class Server {
   File dataFile = null;
   IOSink sink;
   
-  String get surveyPathStr => "$blockDirStr/survey.txt";
-  String get weightsPathStr => "$subjectDirStr/weights.txt";
-  
   Server() {
     // listen on port 8000
     HttpServer.bind("127.0.0.1", 8000)
@@ -42,7 +39,7 @@ class Server {
       print("data server received weights");
       
       // create file object
-      File weightsFile = new File.fromPath(new Path("${command['prefix']}-weights.txt"));
+      File weightsFile = new File.fromPath(new Path("results/${command['prefix']}-weights.txt"));
       
       // write weights to file
       weightsFile.writeAsString(command["data"]);
@@ -51,7 +48,7 @@ class Server {
       print("data server received survey");
 
       // create file object
-      File surveyFile = new File.fromPath(new Path("${command['prefix']}-survey.txt"));
+      File surveyFile = new File.fromPath(new Path("results/${command['prefix']}-survey.txt"));
 
       // write survey to file
       surveyFile.writeAsString(command["data"]);
