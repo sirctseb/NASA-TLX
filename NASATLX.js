@@ -1,134 +1,97 @@
-part of WorkloadExperiment;
-
-class Scale {
-  static const int MENTAL_DEMAND = 0;
-  static const int PHYSICAL_DEMAND = 1;
-  static const int TEMPORAL_DEMAND = 2;
-  static const int PERFORMANCE = 3;
-  static const int EFFORT = 4;
-  static const int FRUSTRATION = 5;
-  
+var Scale = function(type) {
   /// The number of option pairs
-  static const int NUMBER_PAIRS = 15;
+  var NUMBER_PAIRS = 15;
   
-  /// Which scale this is
-  int scale;
-  /// The number of times this scale was picked as more important
-  int count = 0;
-  /// The computed weight for the scale
-  num get weight => count / NUMBER_PAIRS;
-  /// The display title of the scale
-  String title;
-  
-  
-  // TODO these really should just be normal instances and we shouldn't deal with this
-  static resetScaleCounts() {
-    Scales.forEach((index, scale) => scale.count = 0);
+  /// Scale identifiers
+  if(!Scale.staticInit) {
+    Scale.MENTAL_DEMAND = 0;
+    Scale.PHYSICAL_DEMAND = 1;
+    Scale.TEMPORAL_DEMAND = 2;
+    Scale.PERFORMANCE = 3;
+    Scale.EFFORT = 4;
+    Scale.FRUSTRATION = 5;
+    Scale.scaleTitle = {};
+    Scale.scaleTitle[MENTAL_DEMAND] = "Mental Demand";
+    Scale.scaletitle[PHYSICAL_DEMAND] = "Physical Demand";
+    Scale.scaleTitle[TEMPORAL_DEMAND] = "Temporal Demand";
+    Scale.scaleTitle[PERFORMANCE] = "Performance";
+    Scale.scaleTitle[EFFORT] = "Effort";
+    Scale.scaleTitle[FRUSTRATION] = "Frustration";
+    Scale.staticInit = true;
+    Scale.NUMBER_PAIRS = NUMBER_PAIRS;
   }
   
-  static final Map<int, Scale> Scales = new Map<int, Scale>();
-  
-  factory Scale.named(int scale) {
-    //return Scales[scale];
-    if(!Scales.containsKey(scale)) {
-      Scales[scale] = new Scale._named(scale);
-    }
-    return Scales[scale];
-  }
-  Scale._named(int scale) {
-    this.scale = scale;
-    this.title = ScaleTitles[scale];
-  }
-  static Map _scaleTitles;
-  static Map get ScaleTitles {
-    if(_scaleTitles == null) _createScaleTitles();
-    return _scaleTitles;
-  }
-  static _createScaleTitles() {
-    _scaleTitles = new Map<int, String>();
-                                
-    _scaleTitles[MENTAL_DEMAND] = "Mental Demand";
-    _scaleTitles[PHYSICAL_DEMAND] = "Physical Demand";
-    _scaleTitles[TEMPORAL_DEMAND] = "Temporal Demand";
-    _scaleTitles[PERFORMANCE] = "Performance";
-    _scaleTitles[EFFORT] = "Effort";
-    _scaleTitles[FRUSTRATION] = "Frustration";
+  return {
+    /// Which scale this is
+    scale: type,
+    /// The number of times this scale was picked as more important
+    count: 0,
+    /// The computed weight for the scale
+    weight: function() { return this.count / NUMBER_PAIRS },
+    /// The display title of the scale
+    title: Scale.scaleTitle[type]
   }
 }
 
 /// Manages the retrieval and storage of scale weights
 /// There should only be one instance of this
-class TlxWeights {
-  
-  /// The main task controller
-  TaskController controller;
-  
-  TlxWeights(TaskController this.controller) {
-    // register click handlers on the option divs
-    query("#scale-option-1").onClick.listen((event) {
-      scaleClicked(0);
-    });
-    query("#scale-option-2").onClick.listen((event) {
-      scaleClicked(1);
-    });
-    
-    // show initial options
-    presentOptions();
-  }
-  
-  void scaleClicked(int which) {
+var TlxWeights = (function() {
+  // TODO initialize list of scales
+  var scales = [0,1,2,3,4,5].map(Scale);
+  /// The index of the current pair of options. [0, 14]
+  var currentOptionPairIndex = 0;
+
+  // click handler
+  var scaleClicked = function(which) {
     // increment the scale count
-    scales[which].count++;
+    scales[getCurrentOptions()[which]].count++;
     
     // advance the current option pair
-    currentOptionPairIndex++;
+    incrementCurrentOptionPairIndex();
   }
   
   /// Reset weights survey state
-  void reset() {
-    // reset scale counts to 0
-    Scale.resetScaleCounts();
-    
+  var reset = function() {
+    // reset scales
+    scales = [0,1,2,3,4,5].map(Scale);
+
     // set to first option pair
     currentOptionPairIndex = 0;
   }
   
   /// Present the two current options on the screen
-  void presentOptions() {
+  var presentOptions = function() {
     // show the scale titles in ui
-    query("#scale-option-1").text = scales[0].title;
-    query("#scale-option-2").text = scales[1].title;
+    querySelector("#scale-option-1").textContent = scales[getCurrentOptions()[0]].title;
+    querySelector("#scale-option-2").textContent = scales[getCurrentOptions()[1]].title;
   }
   
-  /// The index of the current pair of options. [0, 14]
-  int _currentOptionPairIndex = 0;
-  int get currentOptionPairIndex => _currentOptionPairIndex;
   // this should be a method, but this is so we can do ++
-  set currentOptionPairIndex(int newIndex) {
+  var incrementCurrentOptionPairIndex = function() {
+    // calculate new index
+    var newIndex = currentOptionPairIndex + 1;
+
     if(newIndex >= Scale.NUMBER_PAIRS) {
       // if we're going past the last one, notify controller that we're done
-      controller.weightsCollected(
-          [Scale.MENTAL_DEMAND, Scale.PHYSICAL_DEMAND, Scale.TEMPORAL_DEMAND, Scale.PERFORMANCE, Scale.EFFORT, Scale.FRUSTRATION]
-          .map((scale) => new Scale.named(scale))
-      );
+      // TODO grab this from the controller code
+      controller.weightsCollected(scales);
     } else {
       // update backing field
-      _currentOptionPairIndex = newIndex;
+      currentOptionPairIndex = newIndex;
       // update display
       presentOptions();
     }
   }
   
-  /// Get the current options
-  List<int> get options => getOptions(currentOptionPairIndex);
-  
   /// Get the current scales
-  List<Scale> get scales => options.map((scale) => new Scale.named(scale)).toList();
+  var ret = {
+    scales: function() {
+      return scales;
+    }
+  };
   
   // option pair order
-  List<List<int>> _optionPairs = _makeOptionPairs();
-  static List<List<int>> _makeOptionPairs() {
-    var pairs = [
+  var optionPairsOrdered = [
       [Scale.MENTAL_DEMAND, Scale.PHYSICAL_DEMAND],
       [Scale.TEMPORAL_DEMAND, Scale.MENTAL_DEMAND],
       [Scale.PERFORMANCE, Scale.MENTAL_DEMAND],
@@ -144,19 +107,36 @@ class TlxWeights {
       [Scale.EFFORT, Scale.PERFORMANCE],
       [Scale.PERFORMANCE, Scale.FRUSTRATION],
       [Scale.FRUSTRATION, Scale.EFFORT]
-    ];
-    var retPairs = [];
-    Random rng = new Random(new DateTime.now().millisecond);
-    
-    // randomize pairs
-    while(pairs.length > 0) {
-      retPairs.add(pairs.removeAt(rng.nextInt(pairs.length)));
-    }
-    return retPairs;
-  }
-  /// Get the pair of options at a given index
-  List<int> getOptions(int index) {
-    return _optionPairs[index];
-  }
-}
+  ];
 
+  // TODO randomize
+  var retPairs = [];
+  Random rng = new Random(new DateTime.now().millisecond);
+  
+  // randomize pairs
+  while(pairs.length > 0) {
+    retPairs.add(pairs.removeAt(rng.nextInt(pairs.length)));
+  }
+
+  /// Get the pair of options at a given index
+  var getOptions = function(index) {
+    return optionPairs[index];
+  }
+  var getCurrentOptions = function() {
+    return getOptions(currentOptionPairIndex);
+  }
+
+  // register click handlers on the option divs
+  document.querySelector("#scale-option-1").onclick = function(event) {
+    scaleClicked(0);
+  };
+  document.querySelector("#scale-option-2").onclick = function(event) {
+    scaleClicked(1);
+  };
+    
+  // show initial options
+  presentOptions();
+
+  return ret;
+  
+})();
