@@ -157,13 +157,14 @@ var TlxWeights = (function() {
   };
   document.querySelector("#tlx-submit").onclick = function(event) {
     // store ratings
-    // TODO this is broken
-    scales[MENTAL_DEMAND] = document.querySelector("#mental-demand").value;
-    scales[PHYSICAL_DEMAND] = document.querySelector("#physical-demand").value;
-    scales[TEMPORAL_DEMAND] = document.querySelector("#temporal-demand").value;
-    scales[PERFORMANCE] = document.querySelector("#performance").value;
-    scales[EFFORT] = document.querySelector("#effort").value;
-    scales[FRUSTRATION] = document.querySelector("#frustration").value;
+    var ratings = {};
+    ratings[Scale.MENTAL_DEMAND] = document.querySelector("#mental-demand").value;
+    ratings[Scale.PHYSICAL_DEMAND] = document.querySelector("#physical-demand").value;
+    ratings[Scale.TEMPORAL_DEMAND] = document.querySelector("#temporal-demand").value;
+    ratings[Scale.PERFORMANCE] = document.querySelector("#performance").value;
+    ratings[Scale.EFFORT] = document.querySelector("#effort").value;
+    ratings[Scale.FRUSTRATION] = document.querySelector("#frustration").value;
+    document.querySelector("#results textarea").value = JSON.stringify(ratings);
   };
   document.querySelector("#tlx-reset").onclick = function(event) {
     // reset scales to 0
