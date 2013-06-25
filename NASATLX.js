@@ -21,18 +21,19 @@ var Scale = function(type) {
     Scale.NUMBER_PAIRS = NUMBER_PAIRS;
   }
   
-  return {
+  var ret = {
     /// Which scale this is
     scale: type,
     /// The number of times this scale was picked as more important
     count: 0,
-    /// The computed weight for the scale
-    weight: function() { return this.count / NUMBER_PAIRS },
-    /// The subjective workload value
-    value: 0,
     /// The display title of the scale
     title: Scale.scaleTitle[type]
   }
+  /// The computed weight for the scale
+  ret.__defineGetter__("weight", function() {
+    return this.count / NUMBER_PAIRS;
+  });
+  return ret;
 }
 
 /// Manages the retrieval and storage of scale weights
