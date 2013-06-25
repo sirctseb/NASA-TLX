@@ -27,7 +27,11 @@ var Scale = function(type) {
     /// The number of times this scale was picked as more important
     count: 0,
     /// The display title of the scale
-    title: Scale.scaleTitle[type]
+    title: Scale.scaleTitle[type],
+    /// A method to produce a string output
+    pretty: function() {
+      return this.title + ", " + this.type + ", " + this.count + ", " + this.weight;
+    }
   }
   /// The computed weight for the scale
   ret.__defineGetter__("weight", function() {
@@ -156,7 +160,7 @@ var TlxWeights = (function() {
   document.querySelector("#scale-option-2").onclick = function(event) {
     scaleClicked(1);
   };
-  document.querySelector("#tlx-submit").onclick = function(event) {
+  var surveyResults = function() {
     // store ratings
     var ratings = {};
     ratings[Scale.MENTAL_DEMAND] = document.querySelector("#mental-demand").value;
@@ -165,13 +169,23 @@ var TlxWeights = (function() {
     ratings[Scale.PERFORMANCE] = document.querySelector("#performance").value;
     ratings[Scale.EFFORT] = document.querySelector("#effort").value;
     ratings[Scale.FRUSTRATION] = document.querySelector("#frustration").value;
+    // result string, initialize with header
+    var result = "scale, index, value";
+    for(var i in ratings) {
+      result = result + "\n" + Scale.scaleTitle[i] + ", " + i + ", " + ratings[i];
+    }
+    return result;
+  }
+  document.querySelector("#tlx-submit").onclick = function(event) {
+    // get results string
+    var results = surveyResults();
     // put in results tab
-    document.querySelector("#results textarea").value = JSON.stringify(ratings);
+    document.querySelector("#results textarea").value = results;
     // send to server
     sendToServer({
       type: "survey",
       prefix: document.querySelector("#prefix").value,
-      data: JSON.stringify(ratings)
+      data: results
     });
   };
   document.querySelector("#tlx-reset").onclick = function(event) {
@@ -181,14 +195,24 @@ var TlxWeights = (function() {
       inputs.item(i).value = 0;
     }
   };
+  var weightsResults = function() {
+    // result string, initialize with header
+    var results = "scale, index, count, weight";
+    for(var i in scales) {
+      results = results + "\n" + scales[i].pretty();
+    }
+    return results;
+  }
   document.querySelector("#weights-submit").onclick = function(event) {
+    // get results string
+    var results = weightsResults();
     // put in results tab
-    document.querySelector("#results textarea").value = JSON.stringify(scales);
+    document.querySelector("#results textarea").value = results;
     // send to server
     sendToServer({
       type: "weights",
       prefix: document.querySelector("#prefix").value,
-      data: JSON.stringify(scales)
+      data: results
     });
   };
   document.querySelector("#weights-reset").onclick = function(event) {
