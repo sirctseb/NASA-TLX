@@ -57,11 +57,14 @@
 #weights #scale-option-1+div {
   margin-top: 40px;
 }
+#weight-input-ui, #weight-finish-ui {
+  height:300px;
+}
 
-.tlx-button-div {
+.tlx-button-div, .weights-button-div {
   margin-top: 50px;
   text-align: center;
 }
-.tlx-button-div button {
+.tlx-button-div button, .weights-button-div button {
   font-size: 16px;
 }

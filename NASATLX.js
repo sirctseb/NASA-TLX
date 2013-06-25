@@ -71,8 +71,13 @@ var TlxWeights = (function() {
     // set to first option pair
     currentOptionPairIndex = 0;
 
-    randomizeArray(optionPairs)
- }
+    // randomize the order of the pairs
+    randomizeArray(optionPairs);
+
+    // make sure the input ui shows instead of the finish message
+    document.querySelector("#weight-input-ui").classList.remove("hidden");
+    document.querySelector("#weight-finish-ui").classList.add("hidden");
+  }
   
   /// Present the two current options on the screen
   var presentOptions = function() {
@@ -87,9 +92,9 @@ var TlxWeights = (function() {
     var newIndex = currentOptionPairIndex + 1;
 
     if(newIndex >= Scale.NUMBER_PAIRS) {
-      // TODO do something with the values
-      // reset
-      reset();
+      // hide input ui and show finish message
+      document.querySelector("#weight-input-ui").classList.add("hidden");
+      document.querySelector("#weight-finish-ui").classList.remove("hidden");
     } else {
       // update backing field
       currentOptionPairIndex = newIndex;
@@ -141,12 +146,29 @@ var TlxWeights = (function() {
   };
   document.querySelector("#tlx-submit").onclick = function(event) {
     // store ratings
+    // TODO this is broken
     scales[MENTAL_DEMAND] = document.querySelector("#mental-demand").value;
     scales[PHYSICAL_DEMAND] = document.querySelector("#physical-demand").value;
     scales[TEMPORAL_DEMAND] = document.querySelector("#temporal-demand").value;
     scales[PERFORMANCE] = document.querySelector("#performance").value;
     scales[EFFORT] = document.querySelector("#effort").value;
     scales[FRUSTRATION] = document.querySelector("#frustration").value;
+  };
+  document.querySelector("#tlx-reset").onclick = function(event) {
+    // reset scales to 0
+    var inputs = document.querySelectorAll(".tlx-section input");
+    for(var i = 0; i < inputs.length; i++) {
+      inputs.item(i).value = 0;
+    }
+  };
+  document.querySelector("#weights-submit").onclick = function(event) {
+    // TODO save weights
+  };
+  document.querySelector("#weights-reset").onclick = function(event) {
+    // reset scales
+    reset();
+    // show scales
+    presentOptions();
   };
   document.querySelector("#show-workload").onclick = function(event) {
     // make survey visible and weights invisible
