@@ -1,4 +1,3 @@
 name: NASATLXServer
 description: A server to write results to files
 dependencies:
-  logging: any
