@@ -148,6 +148,16 @@ var TlxWeights = (function() {
     scales[EFFORT] = document.querySelector("#effort").value;
     scales[FRUSTRATION] = document.querySelector("#frustration").value;
   };
+  document.querySelector("#show-workload").onclick = function(event) {
+    // make survey visible and weights invisible
+    document.querySelector("#nasa-tlx").classList.remove("hidden");
+    document.querySelector("#weights").classList.add("hidden");
+  };
+  document.querySelector("#show-weights").onclick = function(event) {
+    // make weights ui visible and survey invisible
+    document.querySelector("#nasa-tlx").classList.add("hidden");
+    document.querySelector("#weights").classList.remove("hidden");
+  }
 
   // show initial options
   presentOptions();

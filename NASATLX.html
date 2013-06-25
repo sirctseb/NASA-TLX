@@ -7,6 +7,10 @@
 		<link rel="stylesheet" href="NASATLX.css">
 	</head>
 	<body>
+		<div id="tlx-nav" class="tlx-nav">
+			<button id="show-workload">Workload Survey</button>
+			<button id="show-weights">Weights</button>
+		</div>
 		<div id="nasa-tlx" class="nasa-tlx">
 			<div id="mental-demand-section" class="tlx-section">
 				Mental Demand<span class="tlx-section-desc">How mentally demanding was the task?</span><br />
@@ -62,7 +66,7 @@
 				<option value="100">
 			</datalist>
 		</div>
-		<div id="weights">
+		<div id="weights" class="hidden">
 			<div>Click the Scale Title that represents the more important contributor to workload for the specific task(s) you performed in this experiment</div>
 			<div class="scale-option" id="scale-option-1"></div>
 			<div>or</div>

@@ -1,4 +1,13 @@
 /* NASA-TLX div */
+.tlx-nav {
+  text-align: center;
+}
+.tlx-nav button {
+  font-size: 16px;
+}
+.hidden {
+  display: none;
+}
 .nasa-tlx {
   margin-left: auto;
   margin-right: auto;
