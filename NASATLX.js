@@ -11,12 +11,12 @@ var Scale = function(type) {
     Scale.EFFORT = 4;
     Scale.FRUSTRATION = 5;
     Scale.scaleTitle = {};
-    Scale.scaleTitle[MENTAL_DEMAND] = "Mental Demand";
-    Scale.scaletitle[PHYSICAL_DEMAND] = "Physical Demand";
-    Scale.scaleTitle[TEMPORAL_DEMAND] = "Temporal Demand";
-    Scale.scaleTitle[PERFORMANCE] = "Performance";
-    Scale.scaleTitle[EFFORT] = "Effort";
-    Scale.scaleTitle[FRUSTRATION] = "Frustration";
+    Scale.scaleTitle[Scale.MENTAL_DEMAND] = "Mental Demand";
+    Scale.scaleTitle[Scale.PHYSICAL_DEMAND] = "Physical Demand";
+    Scale.scaleTitle[Scale.TEMPORAL_DEMAND] = "Temporal Demand";
+    Scale.scaleTitle[Scale.PERFORMANCE] = "Performance";
+    Scale.scaleTitle[Scale.EFFORT] = "Effort";
+    Scale.scaleTitle[Scale.FRUSTRATION] = "Frustration";
     Scale.staticInit = true;
     Scale.NUMBER_PAIRS = NUMBER_PAIRS;
   }
@@ -28,6 +28,8 @@ var Scale = function(type) {
     count: 0,
     /// The computed weight for the scale
     weight: function() { return this.count / NUMBER_PAIRS },
+    /// The subjective workload value
+    value: 0,
     /// The display title of the scale
     title: Scale.scaleTitle[type]
   }
@@ -49,7 +51,18 @@ var TlxWeights = (function() {
     // advance the current option pair
     incrementCurrentOptionPairIndex();
   }
-  
+
+  var randomizeArray = function(arr) {
+    var i = arr.length, j, temp;
+    if ( i === 0 ) return false;
+    while ( --i ) {
+      j = Math.floor( Math.random() * ( i + 1 ) );
+      temp = arr[i];
+      arr[i] = arr[j]; 
+      arr[j] = temp;
+    }
+  }
+
   /// Reset weights survey state
   var reset = function() {
     // reset scales
@@ -57,13 +70,15 @@ var TlxWeights = (function() {
 
     // set to first option pair
     currentOptionPairIndex = 0;
-  }
+
+    randomizeArray(optionPairs)
+ }
   
   /// Present the two current options on the screen
   var presentOptions = function() {
     // show the scale titles in ui
-    querySelector("#scale-option-1").textContent = scales[getCurrentOptions()[0]].title;
-    querySelector("#scale-option-2").textContent = scales[getCurrentOptions()[1]].title;
+    document.querySelector("#scale-option-1").textContent = scales[getCurrentOptions()[0]].title;
+    document.querySelector("#scale-option-2").textContent = scales[getCurrentOptions()[1]].title;
   }
   
   // this should be a method, but this is so we can do ++
@@ -72,9 +87,9 @@ var TlxWeights = (function() {
     var newIndex = currentOptionPairIndex + 1;
 
     if(newIndex >= Scale.NUMBER_PAIRS) {
-      // if we're going past the last one, notify controller that we're done
-      // TODO grab this from the controller code
-      controller.weightsCollected(scales);
+      // TODO do something with the values
+      // reset
+      reset();
     } else {
       // update backing field
       currentOptionPairIndex = newIndex;
@@ -91,7 +106,7 @@ var TlxWeights = (function() {
   };
   
   // option pair order
-  var optionPairsOrdered = [
+  var optionPairs = [
       [Scale.MENTAL_DEMAND, Scale.PHYSICAL_DEMAND],
       [Scale.TEMPORAL_DEMAND, Scale.MENTAL_DEMAND],
       [Scale.PERFORMANCE, Scale.MENTAL_DEMAND],
@@ -109,15 +124,6 @@ var TlxWeights = (function() {
       [Scale.FRUSTRATION, Scale.EFFORT]
   ];
 
-  // TODO randomize
-  var retPairs = [];
-  Random rng = new Random(new DateTime.now().millisecond);
-  
-  // randomize pairs
-  while(pairs.length > 0) {
-    retPairs.add(pairs.removeAt(rng.nextInt(pairs.length)));
-  }
-
   /// Get the pair of options at a given index
   var getOptions = function(index) {
     return optionPairs[index];
@@ -133,7 +139,16 @@ var TlxWeights = (function() {
   document.querySelector("#scale-option-2").onclick = function(event) {
     scaleClicked(1);
   };
-    
+  document.querySelector("#tlx-submit").onclick = function(event) {
+    // store ratings
+    scales[MENTAL_DEMAND] = document.querySelector("#mental-demand").value;
+    scales[PHYSICAL_DEMAND] = document.querySelector("#physical-demand").value;
+    scales[TEMPORAL_DEMAND] = document.querySelector("#temporal-demand").value;
+    scales[PERFORMANCE] = document.querySelector("#performance").value;
+    scales[EFFORT] = document.querySelector("#effort").value;
+    scales[FRUSTRATION] = document.querySelector("#frustration").value;
+  };
+
   // show initial options
   presentOptions();
 
